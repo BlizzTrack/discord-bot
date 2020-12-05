@@ -1,0 +1,31 @@
+{
+  "name": "bt-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc --build tsconfig.json",
+    "start": "node ./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/BlizzTrack/bt-bot.git"
+  },
+  "author": "TheEvilSocks",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://gitlab.com/BlizzTrack/bt-bot/issues"
+  },
+  "homepage": "https://gitlab.com/BlizzTrack/bt-bot#readme",
+  "devDependencies": {
+    "@tsconfig/node14": "^1.0.0",
+    "@types/node": "^14.14.10",
+    "ts-node": "^9.1.0"
+  },
+  "dependencies": {
+    "consola": "^2.15.0",
+    "eris": "^0.14.0",
+    "typescript": "^4.1.2"
+  }
+}
