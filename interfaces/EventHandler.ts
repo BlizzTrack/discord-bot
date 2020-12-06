@@ -1,3 +1,3 @@
 export interface EventHandler {
-	(handler: any): void
+	(...args: any): void
 }
