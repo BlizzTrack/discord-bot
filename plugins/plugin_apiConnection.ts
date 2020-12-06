@@ -19,7 +19,6 @@ class APIConnection extends Plugin {
 
 	get(url: string): Promise<string> {
 		return new Promise((resolve, reject) => {
-
 			https.request(url, this.options, (res) => {
 				if (res.statusCode != 200)
 					return reject(new Error(`Status code ${res.statusCode}`));
@@ -35,17 +34,8 @@ class APIConnection extends Plugin {
 		});
 	}
 
-
-	apiGet<T>(url: string): Promise<T> {
-		return new Promise(async (resolve, reject) => {
-			let data;
-			try {
-				data = await this.get(url);
-			} catch (err) {
-				return reject(err);
-			}
-			resolve(JSON.parse(data) as T);
-		});
+	async apiGet<T>(url: string): Promise<T> {
+		return JSON.parse(await this.get(url)) as T;
 	}
 
 	versions(game: string): Promise<View<VersionRegion>> {
@@ -53,7 +43,6 @@ class APIConnection extends Plugin {
 	}
 
 	cdn(game: string): Promise<View<CDNRegion>> {
-
 		return this.apiGet<View<CDNRegion>>(CDN(game));
 	}
 
