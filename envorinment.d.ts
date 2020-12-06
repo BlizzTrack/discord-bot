@@ -2,7 +2,8 @@ declare global {
 	namespace NodeJS {
 		interface ProcessEnv {
 			DISCORD_TOKEN: string;
-			// TODO: Postgres
+			POSTGRES_CONNECTION_STRING: string,
+			NODE_ENV: string
 		}
 	}
 }

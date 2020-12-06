@@ -1,6 +1,6 @@
 export const CONFIG: any = {
 	bot: {
-		prefixes: 'bt!',
+		prefix: 'bt!',
 		ignoreBots: true,
 		ignoreSelf: true,
 		mainServer: '251192826782679051'
@@ -15,5 +15,4 @@ export const CONFIG: any = {
 			"guildMessages"
 		]
 	}
-
 }

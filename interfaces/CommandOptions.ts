@@ -3,7 +3,7 @@ import { Command } from '../structures/Command';
 
 export interface CommandOptions {
 	permission?: Permission | string[];
-	cooldown: number;
+	cooldown?: number;
 	description?: string;
 	extendedDescription?: string;
 	syntax?: string;

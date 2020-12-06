@@ -6,12 +6,12 @@ if (process.env.RUNNING_MODE)
 if (process.env.NODE_ENV == "release")
 	process.env.NODE_ENV = 'production';
 
-const fs = require('fs');
 
 
 // TODO: Postgres
 
 
+import fs from 'fs';
 import { Client as Eris, Guild, Message, TextChannel } from 'eris';
 import { CommandEvent, PluginEvent } from './interfaces/DEvent';
 import { Command } from './structures/Command';
@@ -22,21 +22,22 @@ import { ErrorMessage as CommandError } from './lib/Responses';
 
 let commands: { [name: string]: Command } = {}, plugins: { [name: string]: Plugin } = {};
 
-
 const bot = new Eris(process.env.DISCORD_TOKEN, config.eris || {});
 
 bot.on('ready', () => {
 	if (!isReady) { // We don't want to run this again if the event is sent a second time.
+		logger.verbose("Ready, loading plugins");
 		let _plugins = fs.readdirSync("./plugins/");
-		for (let i = 0; i < _plugins.length; i++) {
-			if (_plugins[i].startsWith("plugin_") && _plugins[i].substring(_plugins[i].lastIndexOf(".")) == ".js")
-				load('./plugins/' + _plugins[i]);
+		for (const plugin of _plugins) {
+			if (plugin.startsWith("plugin_") && plugin.substring(plugin.lastIndexOf(".")) == ".js")
+				load('./plugins/' + plugin);
 		}
 
+		logger.verbose("Loading commands");
 		let _commands = fs.readdirSync("./commands/");
-		for (let i = 0; i < _commands.length; i++) {
-			if (_commands[i].startsWith("command_") && _commands[i].substring(_commands[i].lastIndexOf(".")) == ".js")
-				load('./commands/' + _commands[i]);
+		for (const command of _commands) {
+			if (command.startsWith("command_") && command.substring(command.lastIndexOf(".")) == ".js")
+				load('./commands/' + command);
 		}
 	}
 
@@ -91,7 +92,7 @@ bot.on('messageCreate', (msg: Message<TextChannel>) => {
 	if (msg.content.toLowerCase().startsWith(config.bot.prefix.toLowerCase())) {
 		try {
 			logger.verbose(`Message with prefix encountered!`);
-			let content = msg.content.trim().substring(config.bot.prefix.length);
+			let content = msg.content.substring(config.bot.prefix.length).trim();
 			let calledCommand = content.trim().split(" ")[0];
 			let args = content.split(" ").splice(1);
 			let hasRights = true;
@@ -111,12 +112,12 @@ bot.on('messageCreate', (msg: Message<TextChannel>) => {
 
 			if (!hasRights) {
 				msg.addReaction("🚫");
-				logger.info(`[${msg.channel.guild}] User ${msg.author.username} (${msg.author.id}) was denied access to command ${calledCommand}`);
+				logger.info(`[${msg.channel.guild.name} (${msg.channel.guild.id})] User ${msg.author.username} (${msg.author.id}) was denied access to command ${calledCommand}`);
 				return;
 			}
 
-			logger.info(`[${msg.channel.guild}] User ${msg.author.username} (${msg.author.id}) called command ${calledCommand}`);
-			logger.debug(content);
+			logger.info(`[${msg.channel.guild.name} (${msg.channel.guild.id})] User ${msg.author.username} (${msg.author.id}) called command ${calledCommand}`);
+			logger.verbose(content);
 
 			try {
 				let e: CommandEvent = {
