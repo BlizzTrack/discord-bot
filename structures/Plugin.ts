@@ -1,5 +1,4 @@
 import { Client } from "eris";
-import { CommandOptions } from "../interfaces/CommandOptions";
 import { PluginEvent } from "../interfaces/DEvent";
 import { EventHandler } from "../interfaces/EventHandler";
 
@@ -11,10 +10,9 @@ export class Plugin {
 	private hasSysInitialized = false
 	public hasPostInitialized: boolean = false;
 
-	constructor(name: string, options: CommandOptions) {
+	constructor(name: string) {
 		if (!name)
 			throw new Error("Plugin name cannot be empty.");
-		options = options || {};
 		this.name = name;
 	}
 

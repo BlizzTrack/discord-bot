@@ -14,7 +14,7 @@ class APIConnection extends Plugin {
 	}
 
 	constructor() {
-		super("APIConnection", {});
+		super("APIConnection");
 	}
 
 	get(url: string): Promise<string> {
