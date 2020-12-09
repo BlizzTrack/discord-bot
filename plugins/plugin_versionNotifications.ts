@@ -9,7 +9,7 @@ import { logger } from '../lib/Logger';
 
 class VersionNotifications extends Plugin {
 
-	private interval: number = -1;
+	private interval: NodeJS.Timeout | null = null;
 
 	private summary: Summary | null = null;
 	private versionCache: { [game: string]: number } = {};
@@ -18,10 +18,16 @@ class VersionNotifications extends Plugin {
 		super("VersionNotifications");
 	}
 
-	async initialize(client: Client, e: PluginEvent) {
+	initialize(client: Client, e: PluginEvent): void {
 		this.doWork();
+
+		this.interval = setInterval(this.doWork, 60000);
 	}
 
+	deinitialize(client: Client, e: PluginEvent) {
+		if (this.interval !== null)
+			clearInterval(this.interval);
+	}
 
 	async doWork() {
 		if (this.client == undefined) return;
