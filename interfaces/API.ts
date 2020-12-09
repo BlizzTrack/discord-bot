@@ -1,5 +1,3 @@
-import { Relationship } from "eris";
-
 export interface Summary {
 	seqn: number,
 	command: string,
@@ -11,7 +9,7 @@ export interface Summary {
 export interface SummaryItem {
 	name: string,
 	product: string,
-	flags: 'cdn' | 'versions' | 'bgdl' | '',
+	flags: 'cdn' | 'versions' | 'bgdl',
 	seqn: number,
 	relations: Relation[]
 }

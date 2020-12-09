@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  node-app:
+    env_file:
+       - .env
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: blizztrack
+    restart: unless-stopped

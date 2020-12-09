@@ -21,6 +21,7 @@
   "devDependencies": {
     "@tsconfig/node14": "^1.0.0",
     "@types/node": "^14.14.10",
+    "@types/pg": "^7.14.7",
     "ts-node": "^9.1.0"
   },
   "dependencies": {

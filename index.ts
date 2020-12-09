@@ -7,24 +7,24 @@ if (process.env.NODE_ENV == "release")
 	process.env.NODE_ENV = 'production';
 
 
-
-// TODO: Postgres
-
-
 import fs from 'fs';
 import { Client as Eris, Guild, Message, TextChannel } from 'eris';
 import { CommandEvent, PluginEvent } from './interfaces/DEvent';
 import { Command } from './structures/Command';
 import { Plugin } from './structures/Plugin';
 import { CONFIG as config } from './config';
-import { logger } from './instancing/Logger';
+import { logger } from './lib/Logger';
 import { ErrorMessage as CommandError } from './lib/Responses';
+import { setup as DatabaseSetup } from './lib/Database';
 
 let commands: { [name: string]: Command } = {}, plugins: { [name: string]: Plugin } = {};
 
 const bot = new Eris(process.env.DISCORD_TOKEN, config.eris || {});
 
-bot.on('ready', () => {
+bot.on('ready', async () => {
+	logger.info("Received 'ready' event from Discord!");
+	await DatabaseSetup();
+
 	if (!isReady) { // We don't want to run this again if the event is sent a second time.
 		logger.verbose("Ready, loading plugins");
 		let _plugins = fs.readdirSync("./plugins/");
@@ -48,17 +48,6 @@ bot.on('ready', () => {
 	logger.debug(`Guilds:\n${bot.guilds.map((g: Guild) => {
 		return `${g.id} - ${g.name}\n`
 	})}`);
-
-
-	if (!global.gc) {
-		logger.warn("NodeJS's Garbage Collector is not exposed. Run with node-args --expose-gc");
-	} else {
-		logger.info("Starting GC interval");
-		global.gc();
-		setInterval(() => {
-			global.gc();
-		}, 5 * 60 * 1000);
-	}
 
 	let e = {
 		commands: commands,
@@ -237,7 +226,7 @@ function load(modulePath: string): void {
 	}
 }
 
-
+logger.info("Starting Discord connection...");
 bot.connect();
 
 process.on('SIGINT', () => {
