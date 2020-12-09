@@ -4,6 +4,7 @@ import { logger } from './Logger';
 const connectionString = process.env.POSTGRES_CONNECTION_STRING;
 
 export const pool = new Pool({
+	ssl: { rejectUnauthorized: false },
 	connectionString
 });
 
