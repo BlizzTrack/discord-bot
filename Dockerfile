@@ -9,6 +9,7 @@ RUN npm run build
 
 # Stage 2 - Run
 FROM node:14-alpine
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
 WORKDIR /usr/src/app
 COPY package*.json ./
