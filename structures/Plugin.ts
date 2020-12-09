@@ -5,7 +5,7 @@ import { EventHandler } from "../interfaces/EventHandler";
 export class Plugin {
 	public readonly name: string;
 
-	private client?: Client;
+	protected client?: Client;
 	private eventHandlers: { [event: string]: EventHandler[] } = {};
 	private hasSysInitialized = false
 	public hasPostInitialized: boolean = false;

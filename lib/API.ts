@@ -26,10 +26,13 @@ export function get(url: string): Promise<string> {
 				resolve(data);
 			});
 		});
+		
 		req.on('error', error => {
 			logger.error(`[API] Error on ${req.method} ${url}\n`, error);
 			logger.verbose(req);
 		})
+
+		req.end();
 	});
 }
 

@@ -5,6 +5,7 @@ import * as API from '../lib/API';
 import { Summary, VersionRegion, View } from '../interfaces/API';
 import { IDiscordChannel, pool } from '../lib/Database';
 import { GameVersion } from '../lib/Responses';
+import { logger } from '../lib/Logger';
 
 class VersionNotifications extends Plugin {
 
@@ -18,11 +19,19 @@ class VersionNotifications extends Plugin {
 	}
 
 	async initialize(client: Client, e: PluginEvent) {
+		this.doWork();
+	}
+
+
+	async doWork() {
+		if (this.client == undefined) return;
+
 		this.summary = await API.summary();
 		for (let ver of this.summary.data.filter(s => s.flags == 'versions')) {
 			if (!(await this.shouldPostMessage(ver.product, ver.seqn))) continue;
 
-			this.postMessage(client, await API.versions(ver.product));
+			logger.debug(`${ver.name} is ready for sending.`);
+			this.postMessage(this.client, await API.versions(ver.product));
 		}
 	}
 
@@ -31,23 +40,29 @@ class VersionNotifications extends Plugin {
 	 * @param product Game code for which to check
 	 */
 	async shouldPostMessage(product: string, seqn: number): Promise<boolean> {
-		if (!(product in this.versionCache)) {
-			let data = await pool.query("SELECT seqn FROM post_cache WHERE game=$1", [product]);
-			if (data.rowCount == 0) return true;
+		logger.debug(product, seqn);
+		if (product in this.versionCache)
+			return seqn > this.versionCache[product];
 
-			this.versionCache[product] = data.rows[0]['seqn'];
-			return seqn > data.rows[0]['seqn'];
-		}
+		let data = await pool.query("SELECT seqn FROM post_cache WHERE game=$1 ORDER BY seqn DESC", [product]);
+		if (data.rowCount == 0) return true;
 
-		return seqn > this.versionCache[product];
+		this.versionCache[product] = data.rows[0]['seqn'];
+		return seqn > data.rows[0]['seqn'];
 	}
 
 	async postMessage(client: Client, game: View<VersionRegion>): Promise<any> {
 		let channels = await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE game=$1", [game.code]);
-		this.versionCache[game.code] = game.seqn;
+		this.updateCache(game.code, game.seqn);
 
 		for (let channel of channels.rows)
 			client.createMessage(channel.channel, GameVersion(game));
+	}
+
+	async updateCache(game: string, seqn: number): Promise<boolean> {
+		this.versionCache[game] = seqn;
+		await pool.query("INSERT INTO post_cache(game, seqn) VALUES($1, $2)", [game, seqn])
+		return true;
 	}
 
 }

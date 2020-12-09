@@ -15,8 +15,8 @@ export async function setup(): Promise<boolean> {
 	await pool.query(
 		`CREATE TABLE IF NOT EXISTS post_cache (
 
-		  seqn INT NOT NULL,
 		  game VARCHAR(16) NOT NULL,
+		  seqn INT NOT NULL,
 		  posted TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
 
 		  PRIMARY KEY(seqn, game)
