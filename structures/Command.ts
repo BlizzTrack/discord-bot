@@ -134,7 +134,7 @@ export class Command {
 		return this._hideSyntax;
 	}
 
-	canRun(member: Member | User) {
+	canRun(member: Member | User): boolean {
 		if (!(member instanceof Member))
 			return this.permission.allow == 0;
 		if (member.guild.ownerID == member.id) return true;
