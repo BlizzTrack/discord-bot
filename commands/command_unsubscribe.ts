@@ -41,7 +41,7 @@ class VersionUnSubscribe extends Command {
 		if (sumGame) {
 			const curGame = settings.rows.find(set => set.game == sumGame?.product);
 			if (curGame && curGame.enabled) {
-				await pool.query("REMOVE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, sumGame.product]);
+				await pool.query("DELETE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, sumGame.product]);
 				return msg.channel.createMessage(OKMessage(`Removed subscription from **${sumGame.name}**!`));
 			}
 		}
@@ -67,7 +67,7 @@ class VersionUnSubscribe extends Command {
 		if (sumGames.length == 1) {
 			const curGame = settings.rows.find(set => set.game == sumGames[0]?.product);
 			if (curGame && curGame.enabled) {
-				await pool.query("REMOVE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, sumGames[0]?.product]);
+				await pool.query("DELETE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, sumGames[0]?.product]);
 				return msg.channel.createMessage(OKMessage(`Removed subscription from **${sumGames[0]?.name}**!`));
 			}
 		}
