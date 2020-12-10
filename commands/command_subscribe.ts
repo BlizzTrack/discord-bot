@@ -11,7 +11,7 @@ class VersionSubscribe extends Command {
 	constructor() {
 		super('subscribe', {
 			aliases: ['sub'],
-			syntax: "<game>"
+			syntax: "{name} <game>"
 		});
 	}
 
