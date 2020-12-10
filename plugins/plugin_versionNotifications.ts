@@ -13,6 +13,7 @@ class VersionNotifications extends Plugin {
 
 	private summary: Summary | null = null;
 	private versionCache: { [game: string]: number } = {};
+	private settingsCache: IDiscordChannel[] = [];
 
 	constructor() {
 		super("VersionNotifications");
@@ -57,12 +58,29 @@ class VersionNotifications extends Plugin {
 		return seqn > data.rows[0]['seqn'];
 	}
 
+	async shouldPostInChannel(guild: string, channel: string, game: string): Promise<boolean> {
+		let guildSettings = this.settingsCache.filter(s => s.guild == guild);
+		if (guildSettings.length == 0) return false;
+
+		let globalSetting = guildSettings.find(s => !s.channel);
+		let channelSetting = guildSettings.find(s => s.channel == channel);
+
+		if (channelSetting)
+			return channelSetting.enabled;
+
+		if (globalSetting)
+			return globalSetting.enabled;
+
+		return false;
+	}
+
 	async postMessage(client: Client, game: View<VersionRegion>): Promise<any> {
 		let channels = await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE game=$1", [game.code]);
 		this.updateCache(game.code, game.seqn);
 
 		for (let channel of channels.rows)
-			client.createMessage(channel.channel, GameVersion(game));
+			if (channel.channel && await this.shouldPostInChannel(channel.guild, channel.channel, game.code))
+				client.createMessage(channel.channel, GameVersion(game));
 	}
 
 	async updateCache(game: string, seqn: number): Promise<boolean> {
