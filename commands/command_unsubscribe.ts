@@ -6,11 +6,11 @@ import { ErrorMessage, OKMessage } from '../lib/Responses';
 import * as API from '../lib/API';
 import { ALIASES } from '../Constants';
 
-class VersionSubscribe extends Command {
+class VersionUnSubscribe extends Command {
 
 	constructor() {
-		super('subscribe', {
-			aliases: ['sub'],
+		super('unsubscribe', {
+			aliases: ['unsub'],
 			syntax: "{name} <game>"
 		});
 	}
@@ -20,16 +20,16 @@ class VersionSubscribe extends Command {
 	}
 
 	get description(): string {
-		return "Subscribe to one or multiple games. Subscribing to a game will post a message whenever a new version is found.";
+		return "Unsubscribe from a game. Unsubscribing from a game will **stop** posting messages whenever a new version is found.";
 	}
 
 	async execute(client: Client, msg: Message<TextChannel>, e: CommandEvent) {
 		let game = e.args.join(" ").toLowerCase();
-		if (!game) return msg.channel.createMessage(ErrorMessage("You forgot to tell me which game to subscribe to!"));
+		if (!game) return msg.channel.createMessage(ErrorMessage("You forgot to tell me which game to unsubscribe from!"));
 
 		const settings = await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE channel=$1", [msg.channel.id]);
 
-		const summary = (await API.summary()).data.filter(s => s.flags == 'versions'); // TODO: Cache this in a singleton
+		const summary = (await API.summary()).data.filter(s => s.flags == 'versions').filter(g => settings.rows.find(r => r.game == g.product)); // TODO: Cache this in a singleton
 		let sumGame = summary.find(sum => game == sum.name.toLowerCase() || game == sum.product.toLowerCase());
 
 		if (!sumGame)
@@ -40,10 +40,10 @@ class VersionSubscribe extends Command {
 		// Early exit if exact match.
 		if (sumGame) {
 			const curGame = settings.rows.find(set => set.game == sumGame?.product);
-			if (curGame && curGame.enabled) return msg.channel.createMessage(OKMessage(`Already subscribed to **${sumGame.name}**`));
-
-			await pool.query("INSERT INTO discord_channels(guild, channel, game, enabled) VALUES($1, $2, $3, $4) ON CONFLICT(channel, game) DO UPDATE SET enabled=$4", [msg.channel.guild.id, msg.channel.id, sumGame.product, true]);
-			return msg.channel.createMessage(OKMessage(`Successfully subscribed to **${sumGame.name}**`));
+			if (curGame && curGame.enabled) {
+				await pool.query("REMOVE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, sumGame.product]);
+				return msg.channel.createMessage(OKMessage(`Removed subscription from **${sumGame.name}**!`));
+			}
 		}
 
 		if (game.length < 2) {
@@ -62,13 +62,14 @@ class VersionSubscribe extends Command {
 		});
 
 		if (sumGames.length == 0)
-			return msg.channel.createMessage(ErrorMessage(`No games found with that search query.`));
+			return msg.channel.createMessage(ErrorMessage(`No games you're subscribed to found with that search query.`));
 
 		if (sumGames.length == 1) {
 			const curGame = settings.rows.find(set => set.game == sumGames[0]?.product);
-			if (curGame && curGame.enabled) return msg.channel.createMessage(OKMessage(`Already subscribed to **${sumGames[0]?.name}**`));
-			await pool.query("INSERT INTO discord_channels(guild, channel, game, enabled) VALUES($1, $2, $3, $4) ON CONFLICT(channel, game) DO UPDATE SET enabled=$4", [msg.channel.guild.id, msg.channel.id, sumGames[0]?.product, true]);
-			return msg.channel.createMessage(OKMessage(`Successfully subscribed to **${sumGames[0]?.name}**`));
+			if (curGame && curGame.enabled) {
+				await pool.query("REMOVE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, sumGames[0]?.product]);
+				return msg.channel.createMessage(OKMessage(`Removed subscription from **${sumGames[0]?.name}**!`));
+			}
 		}
 
 		msg.channel.createMessage({
@@ -83,4 +84,4 @@ class VersionSubscribe extends Command {
 	}
 }
 
-module.exports = (new VersionSubscribe());
+module.exports = (new VersionUnSubscribe());
