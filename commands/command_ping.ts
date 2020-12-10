@@ -5,7 +5,7 @@ import { Command } from "../structures/Command";
 class Ping extends Command {
 
 	constructor() {
-		super("ping", {});
+		super('ping', {});
 	}
 
 	get description() {

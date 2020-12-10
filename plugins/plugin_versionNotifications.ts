@@ -11,9 +11,14 @@ class VersionNotifications extends Plugin {
 
 	private interval: NodeJS.Timeout | null = null;
 
-	private summary: Summary | null = null;
+	private _summary: Summary | null = null; // TODO: Cache this in a singleton
 	private versionCache: { [game: string]: number } = {};
 	private settingsCache: IDiscordChannel[] = [];
+
+
+	public get summary(): Summary | null {
+		return this._summary;
+	}
 
 	constructor() {
 		super("VersionNotifications");
@@ -33,8 +38,8 @@ class VersionNotifications extends Plugin {
 	async doWork() {
 		if (this.client == undefined) return;
 
-		this.summary = await API.summary();
-		for (let ver of this.summary.data.filter(s => s.flags == 'versions')) {
+		this._summary = await API.summary();
+		for (let ver of this._summary.data.filter(s => s.flags == 'versions')) {
 			if (!(await this.shouldPostMessage(ver.product, ver.seqn))) continue;
 
 			logger.debug(`${ver.name} is ready for sending.`);
@@ -47,23 +52,22 @@ class VersionNotifications extends Plugin {
 	 * @param product Game code for which to check
 	 */
 	async shouldPostMessage(product: string, seqn: number): Promise<boolean> {
-		logger.debug(product, seqn);
 		if (product in this.versionCache)
 			return seqn > this.versionCache[product];
 
-		let data = await pool.query("SELECT seqn FROM post_cache WHERE game=$1 ORDER BY seqn DESC", [product]);
+		let data = await pool.query("SELECT MAX(seqn) as seqn FROM post_cache WHERE game=$1 LIMIT 1", [product]);
 		if (data.rowCount == 0) return true;
+		this.versionCache[product] = data.rows[0].seqn;
 
-		this.versionCache[product] = data.rows[0]['seqn'];
-		return seqn > data.rows[0]['seqn'];
+		return seqn > data.rows[0].seqn;
 	}
 
 	async shouldPostInChannel(guild: string, channel: string, game: string): Promise<boolean> {
-		let guildSettings = this.settingsCache.filter(s => s.guild == guild);
+		let guildSettings = this.settingsCache.filter(s => s.channel == channel && s.guild == guild);
 		if (guildSettings.length == 0) return false;
 
-		let globalSetting = guildSettings.find(s => !s.channel);
-		let channelSetting = guildSettings.find(s => s.channel == channel);
+		let globalSetting = guildSettings.find(s => s.game == '*');
+		let channelSetting = guildSettings.find(s => s.game == game);
 
 		if (channelSetting)
 			return channelSetting.enabled;

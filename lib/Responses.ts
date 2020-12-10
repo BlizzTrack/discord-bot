@@ -1,5 +1,5 @@
 import { MANIFEST } from "../Constants"
-import { Summary, SummaryItem, VersionRegion, View } from "../interfaces/API"
+import { VersionRegion, View } from "../interfaces/API"
 
 export function ErrorMessage(errorMessage: string) {
 	return {
