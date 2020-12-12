@@ -38,7 +38,11 @@ export function GameVersion(game: View<VersionRegion>): MessageContent {
 					name: ver.region_name,
 					value: `${ver.versionsname} (${ver.buildid})`
 				}
-			})
+			}),
+			footer: {
+				text: "Indexed"
+			},
+			timestamp: new Date(game.indexed) // Have the discord client decide which timezone to show :)
 		}
 	};
 }
