@@ -98,7 +98,7 @@ bot.on('messageCreate', (msg: Message<TextChannel>) => {
 
 			if (!command) return;
 
-			hasRights = command.canRun(msg.member || msg.author);
+			hasRights = command.canRun(msg.channel, msg.member || msg.author);
 
 			if (!hasRights) {
 				msg.addReaction("🚫");

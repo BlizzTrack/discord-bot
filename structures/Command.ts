@@ -1,4 +1,4 @@
-import { Permission, Member, Client, Message, User } from "eris";
+import { Permission, Member, Client, Message, User, TextChannel } from "eris";
 import { CommandOptions } from '../interfaces/CommandOptions';
 import { CommandEvent, PluginEvent } from "../interfaces/DEvent";
 
@@ -134,12 +134,16 @@ export class Command {
 		return this._hideSyntax;
 	}
 
-	canRun(member: Member | User): boolean {
+	canRun(channel: TextChannel, member: Member | User): boolean {
 		if (!(member instanceof Member))
 			return this.permission.allow == 0;
-		if (member.guild.ownerID == member.id) return true;
-		return (this.permission.allow & member.permissions.allow) == this.permission.allow || member.permissions.has("administrator");
 
+		if (member.guild.ownerID == member.id) return true;
+
+		if ((this.permission.allow & channel.permissionsOf(member).allow) == this.permission.allow)
+			return true;
+
+		return (this.permission.allow & member.permissions.allow) == this.permission.allow || member.permissions.has("administrator");
 	}
 
 	initialize(client: Client, e: PluginEvent) { }

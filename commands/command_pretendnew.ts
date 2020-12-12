@@ -14,9 +14,8 @@ class PretendNew extends Command {
 		});
 	}
 
-	canRun(member: Member | User): boolean {
+	canRun(channel: TextChannel, member: Member | User): boolean {
 		if (!(member instanceof Member)) return false;
-
 		return member.guild.id == '251192826782679051' && member.roles.includes('254752175392161794');
 	}
 
