@@ -1,7 +1,7 @@
 export const BASE_URL = 'https://beta.blizztrack.com';
 export const API_PATH = '/api/NGPD';
 
-export const MANIFEST = (game: string, flag: string, seqn: number) => `${BASE_URL}/${game}/${flag}${seqn ? `?seqn=${seqn}` : ''}`;
+export const MANIFEST = (game: string, flag: string, seqn: number) => `https://blizztrack.com/v/${game}/${flag}/${seqn}`;
 
 export const SUMMARY = `${BASE_URL}${API_PATH}/summary`;
 export const VERSIONS = (game: string) => `${BASE_URL}${API_PATH}/${game}/versions`;
