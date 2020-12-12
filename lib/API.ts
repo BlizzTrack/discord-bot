@@ -1,13 +1,13 @@
 import https from 'https';
 import { CDNRegion, Summary, VersionRegion, View } from '../interfaces/API';
-import { CDN, SUMMARY, VERSIONS } from '../Constants';
+import { CDN, SUMMARY, VERSION, VERSIONS } from '../Constants';
 import { logger } from './Logger';
 
 
 const options: https.RequestOptions = {
 	method: "GET",
 	headers: {
-		'User-Agent': `BT-Bot TypeScript`
+		'User-Agent': `BT-Bot TypeScript, v${VERSION}`
 	}
 }
 
@@ -26,7 +26,7 @@ export function get(url: string): Promise<string> {
 				resolve(data);
 			});
 		});
-		
+
 		req.on('error', error => {
 			logger.error(`[API] Error on ${req.method} ${url}\n`, error);
 			logger.verbose(req);

@@ -14,6 +14,6 @@ RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install --only=production
-COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/dist ./
 
 CMD npm start

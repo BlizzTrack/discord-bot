@@ -1,3 +1,5 @@
+export const VERSION = require('./package.json').version;
+
 export const BASE_URL = 'https://beta.blizztrack.com';
 export const API_PATH = '/api/NGPD';
 

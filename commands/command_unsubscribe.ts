@@ -46,9 +46,8 @@ class VersionUnSubscribe extends Command {
 			}
 		}
 
-		if (game.length < 2) {
+		if (game.length < 2)
 			return msg.channel.createMessage(ErrorMessage(`Please enter at least 2 characters to search.`));
-		}
 
 		// Continue a 'more advanced' search
 		let sumGames = summary.filter(sum => {
