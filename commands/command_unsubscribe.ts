@@ -3,10 +3,12 @@ import { CommandEvent } from '../interfaces/DEvent';
 import { Command } from '../structures/Command';
 import { IDiscordChannel, pool } from '../lib/Database';
 import { ErrorMessage, OKMessage } from '../lib/Responses';
-import * as API from '../lib/API';
 import { ALIASES } from '../Constants';
+import { CacheSingleton } from '../lib/CacheSingleton';
 
 class VersionUnSubscribe extends Command {
+
+	private cache: CacheSingleton;
 
 	constructor() {
 		super('unsubscribe', {
@@ -14,6 +16,7 @@ class VersionUnSubscribe extends Command {
 			category: 'BlizzTrack',
 			syntax: "{name} <game>"
 		});
+		this.cache = CacheSingleton.instance;
 	}
 
 	get permission(): Permission {
@@ -30,7 +33,7 @@ class VersionUnSubscribe extends Command {
 
 		const settings = await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE channel=$1", [msg.channel.id]);
 
-		const summary = (await API.summary()).data.filter(s => s.flags == 'versions').filter(g => settings.rows.find(r => r.game == g.product)); // TODO: Cache this in a singleton
+		const summary = (await this.cache.summary()).data.filter(s => s.flags == 'versions').filter(g => settings.rows.find(r => r.game == g.product));
 		let sumGame = summary.find(sum => game == sum.name.toLowerCase() || game == sum.product.toLowerCase());
 
 		if (!sumGame)

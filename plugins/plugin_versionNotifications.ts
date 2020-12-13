@@ -2,26 +2,25 @@ import { Client } from 'eris';
 import { PluginEvent } from '../interfaces/DEvent';
 import { Plugin } from '../structures/Plugin';
 import * as API from '../lib/API';
-import { Summary, VersionRegion, View } from '../interfaces/API';
+import { VersionRegion, View } from '../interfaces/API';
 import { IDiscordChannel, pool } from '../lib/Database';
 import { GameVersion } from '../lib/Responses';
 import { logger } from '../lib/Logger';
+import { CacheSingleton } from '../lib/CacheSingleton';
 
 class VersionNotifications extends Plugin {
 
+	private cache: CacheSingleton;
 	private interval: NodeJS.Timeout | null = null;
-
-	private _summary: Summary | null = null; // TODO: Cache this in a singleton
 	private versionCache: { [game: string]: number } = {};
 	private settingsCache: IDiscordChannel[] = [];
 
 
-	public get summary(): Summary | null {
-		return this._summary;
-	}
 
 	constructor() {
 		super("VersionNotifications");
+
+		this.cache = CacheSingleton.instance;
 	}
 
 	initialize(client: Client, e: PluginEvent): void {
@@ -38,8 +37,7 @@ class VersionNotifications extends Plugin {
 	async doWork() {
 		if (this.client == undefined) return;
 
-		this._summary = await API.summary();
-		for (let ver of this._summary.data.filter(s => s.flags == 'versions')) {
+		for (let ver of (await this.cache.summary()).data.filter(s => s.flags == 'versions')) {
 			if (!(await this.shouldPostMessage(ver.product, ver.seqn))) continue;
 
 			logger.debug(`${ver.name} is ready for sending.`);
