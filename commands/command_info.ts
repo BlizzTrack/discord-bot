@@ -6,7 +6,9 @@ import { Command } from "../structures/Command";
 class Info extends Command {
 
 	constructor() {
-		super('info', {});
+		super('info', {
+			category: 'information'
+		});
 	}
 
 	get description() {

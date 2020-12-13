@@ -11,6 +11,7 @@ class VersionUnSubscribe extends Command {
 	constructor() {
 		super('unsubscribe', {
 			aliases: ['unsub'],
+			category: 'BlizzTrack',
 			syntax: "{name} <game>"
 		});
 	}
