@@ -18,7 +18,7 @@ class Info extends Command {
 			content: "",
 			embed: {
 				title: `${client.user.username} ${VERSION}`,
-				description: `**${client.user.username}** was made by TheEvilSocks#0023.\nTo view all commands use \`bt!help\`\nClick [here](https://discord.gg/82HahAE) for our support server.`,
+				description: `[BlizzTrack](https://blizztrack.com/) was made by Helba#0001\nThis bot was made by TheEvilSocks#0023.\n\nTo view all commands use \`bt!help\`\nClick [here](https://discord.gg/82HahAE) for our support server.`,
 				fields: [
 					{
 						name: ":diamonds: Shard",
