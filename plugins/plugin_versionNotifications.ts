@@ -16,7 +16,6 @@ class VersionNotifications extends Plugin {
 	private settingsCache: IDiscordChannel[] = [];
 
 
-
 	constructor() {
 		super("VersionNotifications");
 
