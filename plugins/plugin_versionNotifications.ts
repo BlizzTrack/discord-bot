@@ -60,8 +60,8 @@ class VersionNotifications extends Plugin {
 	}
 
 	async shouldPostInChannel(guild: string, channel: string, game: string): Promise<boolean> {
-		let guildSettings = this.settingsCache.filter(s => s.channel == channel && s.guild == guild);
-		if (guildSettings.length == 0) return false;
+		let guildSettings = (await this.cache.settings()).filter(s => s.channel == channel && s.guild == guild);
+		if (guildSettings.length == 0) return false; // Shouldn't really happen, but checking anyway :)
 
 		let globalSetting = guildSettings.find(s => s.game == '*');
 		let channelSetting = guildSettings.find(s => s.game == game);
