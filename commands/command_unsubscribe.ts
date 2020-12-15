@@ -4,7 +4,7 @@ import { Command } from '../structures/Command';
 import { IDiscordChannel, pool } from '../lib/Database';
 import { ErrorMessage, OKMessage } from '../lib/Responses';
 import { ALIASES } from '../Constants';
-import { CacheSingleton } from '../lib/CacheSingleton';
+import { CacheSingleton, UpsertResult } from '../lib/CacheSingleton';
 
 class VersionUnSubscribe extends Command {
 
@@ -40,12 +40,19 @@ class VersionUnSubscribe extends Command {
 			if (game in ALIASES)
 				sumGame = summary.find(sum => ALIASES[game] == sum.product.toLowerCase());
 
+		if (game == '*') {
+			const hasAllSubscription = settings.rows.find(set => set.game == '*' && set.enabled);
+			if (hasAllSubscription) return msg.channel.createMessage(OKMessage(`You are not subscribed to **all games**!`));
+
+			await pool.query("DELETE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, '*']);
+			return msg.channel.createMessage(OKMessage(`Successfully unsubscribed from **all games**!`));
+		}
 
 		// Early exit if exact match.
 		if (sumGame) {
-			const curGame = settings.rows.find(set => set.game == sumGame?.product);
-			if (curGame && curGame.enabled) {
-				await pool.query("DELETE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, sumGame.product]);
+			const curGame = settings.rows.find(set => set.game == sumGame?.product && set.enabled);
+			if (curGame) {
+				const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, sumGame.product, false);
 				return msg.channel.createMessage(OKMessage(`Removed subscription from **${sumGame.name}**!`));
 			}
 		}
@@ -68,9 +75,9 @@ class VersionUnSubscribe extends Command {
 			return msg.channel.createMessage(ErrorMessage(`No games you're subscribed to found with that search query.`));
 
 		if (sumGames.length == 1) {
-			const curGame = settings.rows.find(set => set.game == sumGames[0]?.product);
-			if (curGame && curGame.enabled) {
-				await pool.query("DELETE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, sumGames[0]?.product]);
+			const curGame = settings.rows.find(set => set.game == sumGames[0]?.product && set.enabled);
+			if (curGame) {
+				const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, sumGames[0]?.product, false);
 				return msg.channel.createMessage(OKMessage(`Removed subscription from **${sumGames[0]?.name}**!`));
 			}
 		}

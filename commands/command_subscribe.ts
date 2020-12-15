@@ -4,7 +4,7 @@ import { Command } from '../structures/Command';
 import { IDiscordChannel, pool } from '../lib/Database';
 import { ErrorMessage, OKMessage } from '../lib/Responses';
 import { ALIASES } from '../Constants';
-import { CacheSingleton } from '../lib/CacheSingleton';
+import { CacheSingleton, UpsertResult } from '../lib/CacheSingleton';
 
 class VersionSubscribe extends Command {
 
@@ -40,19 +40,26 @@ class VersionSubscribe extends Command {
 			if (game in ALIASES)
 				sumGame = summary.find(sum => ALIASES[game] == sum.product.toLowerCase());
 
+		if (game == '*') {
+			const hasAllSubscription = settings.rows.find(set => set.game == '*' && set.enabled);
+			if (hasAllSubscription) return msg.channel.createMessage(OKMessage(`Already subscribed to **all games**!`));
+
+			const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, '*', true);
+			return msg.channel.createMessage(OKMessage(`Successfully ${upsetState == UpsertResult.INSERTED ? 'subscribed' : 'updated your subscription'} to **all games**!`));
+		}
+
 
 		// Early exit if exact match.
 		if (sumGame) {
-			const curGame = settings.rows.find(set => set.game == sumGame?.product);
-			if (curGame && curGame.enabled) return msg.channel.createMessage(OKMessage(`Already subscribed to **${sumGame.name}**`));
+			const curGame = settings.rows.find(set => set.game == sumGame?.product && set.enabled);
+			if (curGame) return msg.channel.createMessage(OKMessage(`Already subscribed to **${sumGame.name}**!`));
 
-			await pool.query("INSERT INTO discord_channels(guild, channel, game, enabled) VALUES($1, $2, $3, $4) ON CONFLICT(channel, game) DO UPDATE SET enabled=$4", [msg.channel.guild.id, msg.channel.id, sumGame.product, true]);
-			return msg.channel.createMessage(OKMessage(`Successfully subscribed to **${sumGame.name}**`));
+			const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, sumGame.product, true);
+			return msg.channel.createMessage(OKMessage(`Successfully ${upsetState == UpsertResult.INSERTED ? 'subscribed' : 'updated your subscription'} to **${sumGame.name}**!`));
 		}
 
-		if (game.length < 2) {
+		if (game.length < 2)
 			return msg.channel.createMessage(ErrorMessage(`Please enter at least 2 characters to search.`));
-		}
 
 		// Continue a 'more advanced' search
 		let sumGames = summary.filter(sum => {
@@ -69,10 +76,11 @@ class VersionSubscribe extends Command {
 			return msg.channel.createMessage(ErrorMessage(`No games found with that search query.`));
 
 		if (sumGames.length == 1) {
-			const curGame = settings.rows.find(set => set.game == sumGames[0]?.product);
-			if (curGame && curGame.enabled) return msg.channel.createMessage(OKMessage(`Already subscribed to **${sumGames[0]?.name}**`));
-			await pool.query("INSERT INTO discord_channels(guild, channel, game, enabled) VALUES($1, $2, $3, $4) ON CONFLICT(channel, game) DO UPDATE SET enabled=$4", [msg.channel.guild.id, msg.channel.id, sumGames[0]?.product, true]);
-			return msg.channel.createMessage(OKMessage(`Successfully subscribed to **${sumGames[0]?.name}**`));
+			const curGame = settings.rows.find(set => set.game == sumGames[0]?.product && set.enabled);
+			if (curGame) return msg.channel.createMessage(OKMessage(`Already subscribed to **${sumGames[0]?.name}**!`));
+
+			const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, sumGames[0]?.product, true);
+			return msg.channel.createMessage(OKMessage(`Successfully ${upsetState == UpsertResult.INSERTED ? 'subscribed' : 'updated your subscription'} to **${sumGames[0]?.name}**!`));
 		}
 
 		msg.channel.createMessage({

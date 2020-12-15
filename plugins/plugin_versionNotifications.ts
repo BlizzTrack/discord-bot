@@ -13,8 +13,6 @@ class VersionNotifications extends Plugin {
 	private cache: CacheSingleton;
 	private interval: NodeJS.Timeout | null = null;
 	private versionCache: { [game: string]: number } = {};
-	private settingsCache: IDiscordChannel[] = [];
-
 
 	constructor() {
 		super("VersionNotifications");
@@ -25,7 +23,7 @@ class VersionNotifications extends Plugin {
 	initialize(client: Client, e: PluginEvent): void {
 		this.doWork();
 
-		this.interval = setInterval(this.doWork, 60000);
+		this.interval = setInterval(() => { this.doWork() }, 60000);
 	}
 
 	deinitialize(client: Client, e: PluginEvent) {
@@ -76,7 +74,7 @@ class VersionNotifications extends Plugin {
 	}
 
 	async postMessage(client: Client, game: View<VersionRegion>): Promise<any> {
-		let channels = await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE game=$1", [game.code]);
+		let channels = await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE game=$1 OR game=$2", [game.code, '*']);
 		this.updateCache(game.code, game.seqn);
 
 		for (let channel of channels.rows)
