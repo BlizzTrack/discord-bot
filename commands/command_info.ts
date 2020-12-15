@@ -1,5 +1,5 @@
 import { Client, Message, TextChannel } from "eris";
-import { VERSION } from "../Constants";
+import { DOCS, VERSION } from "../Constants";
 import { CommandEvent } from "../interfaces/DEvent";
 import { Command } from "../structures/Command";
 
@@ -20,7 +20,7 @@ class Info extends Command {
 			content: "",
 			embed: {
 				title: `${client.user.username} ${VERSION}`,
-				description: `[BlizzTrack](https://blizztrack.com/) was made by Helba#0001\nThis bot was made by TheEvilSocks#0023.\n\nTo view all commands use \`bt!help\`\nClick [here](https://discord.gg/82HahAE) for our support server.`,
+				description: `[BlizzTrack](https://blizztrack.com/) was made by Helba#0001\nThis bot was made by TheEvilSocks#0023.\n\nTo view all commands use \`bt!help\` or visit [the website](${DOCS})\nClick [here](https://discord.gg/82HahAE) for our support server.`,
 				fields: [
 					{
 						name: ":diamonds: Shard",

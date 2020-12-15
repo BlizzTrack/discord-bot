@@ -17,6 +17,7 @@ export const MANIFEST_BETA = (game: string, flag: string, seqn: number) => `${BE
 
 export const MANIFEST = USE_BETA_URL ? MANIFEST_BETA : MANIFEST_STABLE;// (game: string, flag: string, seqn: number) => `${NORMAL_BASE}/v/${game}/${flag}/${seqn}`;
 
+export const DOCS = `https://beta.blizztrack.com/Docs/Bot`; // TODO: Check for beta url once stable is updated.
 
 export const SUMMARY = `${API_BASE}${API_PATH}/summary`;
 export const VERSIONS = (game: string) => `${API_BASE}${API_PATH}/${game}/versions`;

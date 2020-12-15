@@ -5,6 +5,7 @@ import { CommandEvent } from '../interfaces/DEvent';
 import { Command } from '../structures/Command';
 
 import { CONFIG as Config } from '../config';
+import { DOCS } from '../Constants';
 
 const HelpCommand = require('./help/help_command');
 
@@ -66,7 +67,7 @@ class Help extends Command {
 		msg.channel.createMessage({
 			content: "",
 			embed: {
-				description: `Listed below are all the available commands.\nUse \`${Config.bot.prefix}help <command>\` to view further information.`,
+				description: `Listed below are all the available commands.\nUse \`${Config.bot.prefix}help <command>\` to view further information.\n\nThere is a documentation with images and examples available on [our website](${DOCS})`,
 				author: {
 					icon_url: "http://i.imgur.com/c5x8hJg.png",
 					name: "Help"
