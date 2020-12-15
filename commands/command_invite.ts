@@ -20,8 +20,8 @@ class BotInvite extends Command {
 		msg.channel.createMessage({
 			content: "",
 			embed: {
-				title: "Add BlizzTrack to your server",
-				description: `You can add the BlizzTrack bot to your server by clicking [this link.](https://discord.com/oauth2/authorize?client_id=272526395337342977&scope=bot)\n\nClick [here](https://discord.gg/82HahAE) for our support server.`,
+				title: `Add ${client.user.username} to your server`,
+				description: `[<:AddBot:788494328551964700> Click this link](https://discord.com/oauth2/authorize?client_id=272526395337342977&permissions=537151488&scope=bot) to add ${client.user.username} to your server.\n\n[<:info:785209415933362197> Click here](https://discord.gg/82HahAE) for our support server.`,
 				thumbnail: {
 					url: client.user.avatarURL
 				}
