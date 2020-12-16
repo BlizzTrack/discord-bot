@@ -7,15 +7,15 @@ if (process.env.NODE_ENV == "release")
 	process.env.NODE_ENV = 'production';
 
 
-import fs from 'fs';
 import { Client as Eris, Guild, Message, TextChannel } from 'eris';
-import { CommandEvent, PluginEvent } from './interfaces/DEvent';
-import { Command } from './structures/Command';
-import { Plugin } from './structures/Plugin';
+import fs from 'fs';
 import { CONFIG as config } from './config';
+import { CommandEvent, PluginEvent } from './interfaces/DEvent';
+import { setup as DatabaseSetup, upgrade as DatabaseUpgrade } from './lib/Database';
 import { logger } from './lib/Logger';
 import { ErrorMessage as CommandError } from './lib/Responses';
-import { setup as DatabaseSetup, upgrade as DatabaseUpgrade } from './lib/Database';
+import { Command } from './structures/Command';
+import { Plugin } from './structures/Plugin';
 
 let commands: { [name: string]: Command } = {}, plugins: { [name: string]: Plugin } = {};
 
