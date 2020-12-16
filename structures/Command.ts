@@ -1,4 +1,4 @@
-import { Permission, Member, Client, Message, User, TextChannel } from "eris";
+import { Client, Member, Message, Permission, TextChannel, User } from "eris";
 import { CommandOptions } from '../interfaces/CommandOptions';
 import { CommandEvent, PluginEvent } from "../interfaces/DEvent";
 
