@@ -1,4 +1,4 @@
-import Eris, { MessageContent } from "eris"
+import { MessageContent } from "eris"
 import { MANIFEST } from "../Constants"
 import { VersionRegion, View } from "../interfaces/API"
 

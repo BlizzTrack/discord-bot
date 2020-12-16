@@ -1,12 +1,12 @@
 import { Client } from 'eris';
-import { PluginEvent } from '../interfaces/DEvent';
-import { Plugin } from '../structures/Plugin';
-import * as API from '../lib/API';
 import { VersionRegion, View } from '../interfaces/API';
-import { IDiscordChannel, pool } from '../lib/Database';
-import { GameVersion } from '../lib/Responses';
-import { logger } from '../lib/Logger';
+import { PluginEvent } from '../interfaces/DEvent';
+import * as API from '../lib/API';
 import { CacheSingleton } from '../lib/CacheSingleton';
+import { IDiscordChannel, pool } from '../lib/Database';
+import { logger } from '../lib/Logger';
+import { GameVersion } from '../lib/Responses';
+import { Plugin } from '../structures/Plugin';
 
 class VersionNotifications extends Plugin {
 

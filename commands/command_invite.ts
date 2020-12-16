@@ -1,5 +1,4 @@
 import { Client, Message, TextChannel } from "eris";
-import { VERSION } from "../Constants";
 import { CommandEvent } from "../interfaces/DEvent";
 import { Command } from "../structures/Command";
 

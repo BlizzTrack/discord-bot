@@ -1,8 +1,8 @@
 import { Client, Message, TextChannel } from 'eris';
 import { CommandEvent } from '../interfaces/DEvent';
-import { Command } from '../structures/Command';
-import { ErrorMessage, OKMessage } from '../lib/Responses';
 import { CacheSingleton } from '../lib/CacheSingleton';
+import { ErrorMessage } from '../lib/Responses';
+import { Command } from '../structures/Command';
 
 class SearchGame extends Command {
 

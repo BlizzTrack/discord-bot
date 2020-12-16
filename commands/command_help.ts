@@ -1,11 +1,11 @@
 
 
 import { Client, Message, TextChannel } from 'eris';
+import { CONFIG as Config } from '../config';
+import { DOCS } from '../Constants';
 import { CommandEvent } from '../interfaces/DEvent';
 import { Command } from '../structures/Command';
 
-import { CONFIG as Config } from '../config';
-import { DOCS } from '../Constants';
 
 const HelpCommand = require('./help/help_command');
 

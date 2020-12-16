@@ -1,6 +1,6 @@
 import https from 'https';
-import { CDNRegion, Summary, VersionRegion, View } from '../interfaces/API';
 import { CDN, SUMMARY, VERSION, VERSIONS } from '../Constants';
+import { CDNRegion, Summary, VersionRegion, View } from '../interfaces/API';
 import { logger } from './Logger';
 
 

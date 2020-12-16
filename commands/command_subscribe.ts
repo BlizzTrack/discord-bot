@@ -1,10 +1,10 @@
 import { Client, Constants, Message, Permission, TextChannel } from 'eris';
+import { ALIASES } from '../Constants';
 import { CommandEvent } from '../interfaces/DEvent';
-import { Command } from '../structures/Command';
+import { CacheSingleton, UpsertResult } from '../lib/CacheSingleton';
 import { IDiscordChannel, pool } from '../lib/Database';
 import { ErrorMessage, OKMessage } from '../lib/Responses';
-import { ALIASES } from '../Constants';
-import { CacheSingleton, UpsertResult } from '../lib/CacheSingleton';
+import { Command } from '../structures/Command';
 
 class VersionSubscribe extends Command {
 
