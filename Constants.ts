@@ -12,7 +12,7 @@ export const API_BASE = API_USE_BETA_URL ? BETA_BASE_URL : BASE_URL; // Used to 
 
 export const API_PATH = '/api/NGPD';
 
-export const MANIFEST_STABLE = (game: string, flag: string, seqn: number) => `${BASE_URL}/v/${game}/${flag}/${seqn}`;
+export const MANIFEST_STABLE = (game: string, flag: string, seqn: number) => `${BASE_URL}/v/${game}/${flag}?latest-seqn=${seqn}`;
 export const MANIFEST_BETA = (game: string, flag: string, seqn: number) => `${BETA_BASE_URL}/v/${game}/${flag}?latest-seqn=${seqn}`;
 
 export const MANIFEST = USE_BETA_URL ? MANIFEST_BETA : MANIFEST_STABLE;// (game: string, flag: string, seqn: number) => `${NORMAL_BASE}/v/${game}/${flag}/${seqn}`;
