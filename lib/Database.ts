@@ -41,7 +41,7 @@ export class DiscordChannel extends Model<IDiscordChannel> implements IDiscordCh
 	public enabled!: boolean;
 }
 
-export class PatchNoteCache extends Model<IPatchNoteCache, Optional<Optional<IPatchNoteCache, 'updated'>, 'created'>> implements IPatchNoteCache {
+export class PatchNoteCache extends Model<IPatchNoteCache, Optional<IPatchNoteCache, 'updated' | 'created'>> implements IPatchNoteCache {
 	public game!: string;
 	public type!: string;
 	public created!: Date;
@@ -79,7 +79,8 @@ DiscordChannel.init(
 	},
 	{
 		tableName: "discord_channels",
-		sequelize: connection
+		sequelize: connection,
+		timestamps: false
 	}
 );
 
@@ -102,7 +103,8 @@ PostCache.init(
 	},
 	{
 		tableName: "post_cache",
-		sequelize: connection
+		sequelize: connection,
+		timestamps: false
 	}
 );
 
@@ -129,7 +131,8 @@ PatchNoteCache.init(
 	},
 	{
 		tableName: "patchnote_cache",
-		sequelize: connection
+		sequelize: connection,
+		timestamps: false
 	}
 );
 //#endregion

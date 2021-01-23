@@ -1,5 +1,5 @@
 import { Client } from 'eris';
-import { Op, Sequelize } from 'sequelize/types';
+import { Op, Sequelize } from 'sequelize';
 import { VersionRegion, View } from '../interfaces/API';
 import { PluginEvent } from '../interfaces/DEvent';
 import * as API from '../lib/API';
