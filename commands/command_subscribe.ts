@@ -2,7 +2,7 @@ import { Client, Constants, Message, Permission, TextChannel } from 'eris';
 import { ALIASES } from '../Constants';
 import { CommandEvent } from '../interfaces/DEvent';
 import { CacheSingleton, UpsertResult } from '../lib/CacheSingleton';
-import { IDiscordChannel, pool } from '../lib/Database';
+import { DiscordChannel, IDiscordChannel } from '../lib/Database';
 import { ErrorMessage, OKMessage } from '../lib/Responses';
 import { Command } from '../structures/Command';
 
@@ -31,7 +31,7 @@ class VersionSubscribe extends Command {
 		let game = e.args.join(" ").toLowerCase();
 		if (!game) return msg.channel.createMessage(ErrorMessage("You forgot to tell me which game to subscribe to!"));
 
-		const settings = await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE channel=$1", [msg.channel.id]);
+		const settings = await DiscordChannel.findAll({ where: { channel: msg.channel.id } }); //await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE channel=$1", [msg.channel.id]);
 
 		const summary = (await this.cache.summary()).data.filter(s => s.flags == 'versions');
 		let sumGame = summary.find(sum => game == sum.name.toLowerCase() || game == sum.product.toLowerCase());
@@ -41,7 +41,7 @@ class VersionSubscribe extends Command {
 				sumGame = summary.find(sum => ALIASES[game] == sum.product.toLowerCase());
 
 		if (game == '*') {
-			const hasAllSubscription = settings.rows.find(set => set.game == '*' && set.enabled);
+			const hasAllSubscription = settings.find(set => set.game == '*' && set.enabled);
 			if (hasAllSubscription) return msg.channel.createMessage(OKMessage(`Already subscribed to **all games**!`));
 
 			const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, '*', true);
@@ -51,7 +51,7 @@ class VersionSubscribe extends Command {
 
 		// Early exit if exact match.
 		if (sumGame) {
-			const curGame = settings.rows.find(set => set.game == sumGame?.product && set.enabled);
+			const curGame = settings.find(set => set.game == sumGame?.product && set.enabled);
 			if (curGame) return msg.channel.createMessage(OKMessage(`Already subscribed to **${sumGame.name}**!`));
 
 			const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, sumGame.product, true);
@@ -76,7 +76,7 @@ class VersionSubscribe extends Command {
 			return msg.channel.createMessage(ErrorMessage(`No games found with that search query.`));
 
 		if (sumGames.length == 1) {
-			const curGame = settings.rows.find(set => set.game == sumGames[0]?.product && set.enabled);
+			const curGame = settings.find(set => set.game == sumGames[0]?.product && set.enabled);
 			if (curGame) return msg.channel.createMessage(OKMessage(`Already subscribed to **${sumGames[0]?.name}**!`));
 
 			const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, sumGames[0]?.product, true);

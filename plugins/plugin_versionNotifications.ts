@@ -1,9 +1,10 @@
 import { Client } from 'eris';
+import { Op, Sequelize } from 'sequelize/types';
 import { VersionRegion, View } from '../interfaces/API';
 import { PluginEvent } from '../interfaces/DEvent';
 import * as API from '../lib/API';
 import { CacheSingleton } from '../lib/CacheSingleton';
-import { IDiscordChannel, pool } from '../lib/Database';
+import { DiscordChannel, PostCache } from '../lib/Database';
 import { logger } from '../lib/Logger';
 import { GameVersion } from '../lib/Responses';
 import { Plugin } from '../structures/Plugin';
@@ -50,11 +51,19 @@ class VersionNotifications extends Plugin {
 		if (product in this.versionCache)
 			return seqn > this.versionCache[product];
 
-		let data = await pool.query("SELECT MAX(seqn) as seqn FROM post_cache WHERE game=$1 LIMIT 1", [product]);
-		if (data.rowCount == 0) return true;
-		this.versionCache[product] = data.rows[0].seqn;
+		// SELECT MAX(seqn) as seqn FROM post_cache WHERE game=${product} LIMIT 1
+		let data = await PostCache.findOne({
+			attributes: [
+				[Sequelize.fn('MAX', Sequelize.col('seqn')), 'seqn']
+			],
+			where: {
+				game: product
+			}
+		});
+		if (!data) return true;
+		this.versionCache[product] = data.seqn;
 
-		return seqn > data.rows[0].seqn;
+		return seqn > data.seqn;
 	}
 
 	async shouldPostInChannel(guild: string, channel: string, game: string): Promise<boolean> {
@@ -74,17 +83,29 @@ class VersionNotifications extends Plugin {
 	}
 
 	async postMessage(client: Client, game: View<VersionRegion>): Promise<any> {
-		let channels = await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE game=$1 OR game=$2", [game.code, '*']);
+		// SELECT * FROM discord_channels WHERE game=${game.code} OR game='*'
+		let channels = await DiscordChannel.findAll({
+			where: {
+				[Op.or]: [
+					{ game: game.code },
+					{ game: '*' }
+				]
+			}
+		});
 		this.updateCache(game.code, game.seqn);
 
-		for (let channel of channels.rows)
+		for (let channel of channels)
 			if (channel.channel && await this.shouldPostInChannel(channel.guild, channel.channel, game.code))
 				client.createMessage(channel.channel, GameVersion(game));
 	}
 
 	async updateCache(game: string, seqn: number): Promise<boolean> {
 		this.versionCache[game] = seqn;
-		await pool.query("INSERT INTO post_cache(game, seqn) VALUES($1, $2)", [game, seqn])
+		// INSERT INTO post_cache(game, seqn) VALUES(${game}, ${seqn})
+		await PostCache.create({
+			game: game,
+			seqn: seqn
+		});
 		return true;
 	}
 

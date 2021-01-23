@@ -1,14 +1,7 @@
 import {
 	Sequelize,
 	Model,
-	ModelDefined,
 	DataTypes,
-	HasManyGetAssociationsMixin,
-	HasManyAddAssociationMixin,
-	HasManyHasAssociationMixin,
-	Association,
-	HasManyCountAssociationsMixin,
-	HasManyCreateAssociationMixin,
 	Optional,
 	fn,
 } from "sequelize";
@@ -42,23 +35,23 @@ export interface IDiscordChannel {
 
 //#region Models
 export class DiscordChannel extends Model<IDiscordChannel> implements IDiscordChannel {
-	guild: string;
-	channel: string;
-	game: string;
-	enabled: boolean;
+	public guild!: string;
+	public channel!: string;
+	public game!: string;
+	public enabled!: boolean;
 }
 
-export class PatchNoteCache extends Model<IPatchNoteCache> implements IPatchNoteCache {
-	game: string;
-	type: string;
-	created: Date;
-	updated: Date;
+export class PatchNoteCache extends Model<IPatchNoteCache, Optional<Optional<IPatchNoteCache, 'updated'>, 'created'>> implements IPatchNoteCache {
+	public game!: string;
+	public type!: string;
+	public created!: Date;
+	public updated!: Date;
 }
 
-export class PostCache extends Model<IPostCache> implements IPostCache {
-	seqn: number;
-	game: string;
-	posted: Date;
+export class PostCache extends Model<IPostCache, Optional<IPostCache, 'posted'>> implements IPostCache {
+	public seqn!: number;
+	public game!: string;
+	public posted!: Date;
 }
 //#endregion
 
@@ -67,7 +60,7 @@ DiscordChannel.init(
 	{
 		guild: {
 			type: DataTypes.BIGINT,
-			allowNull: false
+			allowNull: false,
 		},
 		channel: {
 			type: DataTypes.BIGINT,
@@ -83,7 +76,6 @@ DiscordChannel.init(
 			type: DataTypes.BOOLEAN,
 			allowNull: false
 		},
-
 	},
 	{
 		tableName: "discord_channels",
@@ -105,8 +97,7 @@ PostCache.init(
 		},
 		posted: {
 			type: DataTypes.DATE,
-			defaultValue: fn('NOW'),
-			allowNull: false
+			defaultValue: fn('NOW')
 		}
 	},
 	{
@@ -129,13 +120,11 @@ PatchNoteCache.init(
 		},
 		created: {
 			type: DataTypes.DATE,
-			defaultValue: fn('NOW'),
-			allowNull: false
+			defaultValue: fn('NOW')
 		},
 		updated: {
 			type: DataTypes.DATE,
-			defaultValue: fn('NOW'),
-			allowNull: true
+			defaultValue: fn('NOW')
 		}
 	},
 	{
@@ -144,3 +133,5 @@ PatchNoteCache.init(
 	}
 );
 //#endregion
+
+connection.sync({ alter: true })
