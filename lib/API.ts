@@ -16,7 +16,7 @@ export function get(url: string): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const req = https.request(url, options, (res) => {
 			if (res.statusCode != 200)
-				return reject(new Error(`Status code ${res.statusCode}`));
+				return reject(new Error(`Status code ${res.statusCode} ${url}`));
 			let data = '';
 
 			res.on('data', (chunk) => {
