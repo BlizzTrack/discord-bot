@@ -1,4 +1,4 @@
-import Eris, { ClientOptions } from "eris";
+import { ClientOptions } from "eris";
 
 
 export interface BotConfig {
