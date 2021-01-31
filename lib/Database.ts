@@ -9,6 +9,13 @@ import {
 const connectionString = process.env.POSTGRES_CONNECTION_STRING;
 
 export const connection = new Sequelize(connectionString, {
+	dialect: 'postgres',
+	dialectOptions: {
+		ssl: {
+			require: true,
+			rejectUnauthorized: false
+		}
+	},
 	logging: false,
 	ssl: true
 });
