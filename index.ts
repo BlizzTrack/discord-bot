@@ -24,6 +24,7 @@ const bot = new Eris(process.env.DISCORD_TOKEN, config.eris || {});
 bot.on('ready', async () => {
 	logger.info("Received 'ready' event from Discord!");
 	await connection.authenticate();
+	await connection.sync({ alter: true });
 
 	if (!isReady) { // We don't want to run this again if the event is sent a second time.
 		logger.verbose("Ready, loading plugins");

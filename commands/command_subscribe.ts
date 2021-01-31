@@ -1,8 +1,8 @@
-import { Client, Constants, Message, Permission, TextChannel } from 'eris';
+import { Client, Constants, DiscordRESTError, Message, Permission, TextChannel } from 'eris';
 import { ALIASES } from '../Constants';
 import { CommandEvent } from '../interfaces/DEvent';
 import { CacheSingleton, UpsertResult } from '../lib/CacheSingleton';
-import { DiscordChannel, IDiscordChannel } from '../lib/Database';
+import { DiscordChannel } from '../lib/Database';
 import { ErrorMessage, OKMessage } from '../lib/Responses';
 import { Command } from '../structures/Command';
 
@@ -40,7 +40,7 @@ class VersionSubscribe extends Command {
 			if (game in ALIASES)
 				sumGame = summary.find(sum => ALIASES[game] == sum.product.toLowerCase());
 
-		if (game == '*') {
+		if (['*', 'all'].includes(game)) {
 			const hasAllSubscription = settings.find(set => set.game == '*' && set.enabled);
 			if (hasAllSubscription) return msg.channel.createMessage(OKMessage(`Already subscribed to **all games**!`));
 
@@ -89,6 +89,16 @@ class VersionSubscribe extends Command {
 				description: "Your search resulted in multiple games with similar names!\nPlease choose one by using its shortname.\n\n" +
 					sumGames.map(game => `${game.name} - \`${game.product}\``).join('\n'),
 				color: 0x01aeff
+			}
+		}).catch((err: DiscordRESTError) => {
+			if (err.code == 50035) { // Invalid Form Body
+				msg.channel.createMessage({
+					content: '', embed: {
+						title: "Too many games found!",
+						description: "Your search resulted in too many games to display, please narrow your search.",
+						color: 0xfd77a4
+					}
+				});
 			}
 		});
 

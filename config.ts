@@ -1,4 +1,14 @@
-export const CONFIG: any = {
+import Eris, { ClientOptions } from "eris";
+
+
+export interface BotConfig {
+	prefix: string,
+	ignoreBots: boolean,
+	ignoreSelf: boolean,
+	mainServer: string
+}
+
+export const CONFIG: { bot: BotConfig, eris: ClientOptions } = {
 	bot: {
 		prefix: 'bt!',
 		ignoreBots: true,
@@ -12,7 +22,8 @@ export const CONFIG: any = {
 		messageLimit: 1,
 		intents: [
 			"guilds",
-			"guildMessages"
+			"guildMessages",
+			"guildMessageReactions"
 		]
 	}
 }

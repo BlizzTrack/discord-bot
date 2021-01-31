@@ -2,22 +2,22 @@ import { MessageContent } from "eris"
 import { MANIFEST } from "../Constants"
 import { VersionRegion, View } from "../interfaces/API"
 
-export function ErrorMessage(errorMessage: string) {
+export function ErrorMessage(errorMessage: string, title?: string) {
 	return {
 		content: "",
 		embed: {
-			title: "Error",
+			title: title || "Error",
 			description: errorMessage,
 			color: 0x8b1f1f
 		}
 	}
 }
 
-export function OKMessage(okMessage: string) {
+export function OKMessage(okMessage: string, title?: string) {
 	return {
 		content: "",
 		embed: {
-			title: "OK",
+			title: title || "OK",
 			description: okMessage,
 			color: 0x1f8b4c
 		}

@@ -8,8 +8,9 @@ import {
 
 const connectionString = process.env.POSTGRES_CONNECTION_STRING;
 
-export const connection = new Sequelize(connectionString);
-
+export const connection = new Sequelize(connectionString, {
+	logging: false
+});
 
 //#region Interfaces
 export interface IPostCache {
@@ -30,6 +31,16 @@ export interface IDiscordChannel {
 	channel: string;
 	game: string;
 	enabled: boolean;
+}
+
+export interface IPagination {
+	channel: string;
+	message: string;
+	author: string;
+	command: string;
+	subcommand?: string;
+	page: number;
+	data?: any;
 }
 //#endregion
 
@@ -52,6 +63,16 @@ export class PostCache extends Model<IPostCache, Optional<IPostCache, 'posted'>>
 	public seqn!: number;
 	public game!: string;
 	public posted!: Date;
+}
+
+export class Pagination extends Model<IPagination> implements IPagination {
+	public channel!: string;
+	public message!: string;
+	public author!: string;
+	public command!: string;
+	public subcommand?: string;
+	public page!: number;
+	public data?: any;
 }
 //#endregion
 
@@ -135,6 +156,45 @@ PatchNoteCache.init(
 		timestamps: false
 	}
 );
-//#endregion
 
-connection.sync({ alter: true })
+
+Pagination.init(
+	{
+		channel: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		message: {
+			type: DataTypes.STRING,
+			primaryKey: true,
+			allowNull: false
+		},
+		author: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		command: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		subcommand: {
+			type: DataTypes.STRING,
+			allowNull: true
+		},
+		page: {
+			type: DataTypes.INTEGER,
+			allowNull: false
+		},
+		data: {
+			type: DataTypes.JSON,
+			allowNull: true
+		},
+	},
+	{
+		tableName: "command_pagination",
+		sequelize: connection,
+		timestamps: false
+	}
+);
+
+//#endregion
