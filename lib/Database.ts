@@ -9,7 +9,8 @@ import {
 const connectionString = process.env.POSTGRES_CONNECTION_STRING;
 
 export const connection = new Sequelize(connectionString, {
-	logging: false
+	logging: false,
+	ssl: true
 });
 
 //#region Interfaces
