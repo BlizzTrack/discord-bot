@@ -2,7 +2,7 @@ import { Client, Constants, Message, Permission, TextChannel } from 'eris';
 import { ALIASES } from '../Constants';
 import { CommandEvent } from '../interfaces/DEvent';
 import { CacheSingleton } from '../lib/CacheSingleton';
-import { IDiscordChannel, pool } from '../lib/Database';
+import { DiscordChannel, IDiscordChannel } from '../lib/Database';
 import { ErrorMessage, OKMessage } from '../lib/Responses';
 import { Command } from '../structures/Command';
 
@@ -31,9 +31,9 @@ class VersionUnSubscribe extends Command {
 		let game = e.args.join(" ").toLowerCase();
 		if (!game) return msg.channel.createMessage(ErrorMessage("You forgot to tell me which game to unsubscribe from!"));
 
-		const settings = await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE channel=$1", [msg.channel.id]);
+		const settings = await DiscordChannel.findAll({ where: { channel: msg.channel.id } }); // await pool.query<IDiscordChannel>("SELECT * FROM discord_channels WHERE channel=$1", [msg.channel.id]);
 
-		const summary = (await this.cache.summary()).data.filter(s => s.flags == 'versions').filter(g => settings.rows.find(r => r.game == g.product));
+		const summary = (await this.cache.summary()).data.filter(s => s.flags == 'versions').filter(g => settings.find(r => r.game == g.product));
 		let sumGame = summary.find(sum => game == sum.name.toLowerCase() || game == sum.product.toLowerCase());
 
 		if (!sumGame)
@@ -41,16 +41,23 @@ class VersionUnSubscribe extends Command {
 				sumGame = summary.find(sum => ALIASES[game] == sum.product.toLowerCase());
 
 		if (game == '*') {
-			const hasAllSubscription = settings.rows.find(set => set.game == '*' && set.enabled);
+			const hasAllSubscription = settings.find(set => set.game == '*' && set.enabled);
 			if (hasAllSubscription) return msg.channel.createMessage(OKMessage(`You are not subscribed to **all games**!`));
 
-			await pool.query("DELETE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, '*']);
+			await DiscordChannel.destroy({
+				where: {
+					guild: msg.channel.guild.id,
+					channel: msg.channel.id,
+					game: '*'
+				}
+			});
+			// await pool.query("DELETE FROM discord_channels WHERE guild=$1 AND channel=$2 AND game=$3", [msg.channel.guild.id, msg.channel.id, '*']);
 			return msg.channel.createMessage(OKMessage(`Successfully unsubscribed from **all games**!`));
 		}
 
 		// Early exit if exact match.
 		if (sumGame) {
-			const curGame = settings.rows.find(set => set.game == sumGame?.product && set.enabled);
+			const curGame = settings.find(set => set.game == sumGame?.product && set.enabled);
 			if (curGame) {
 				const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, sumGame.product, false);
 				return msg.channel.createMessage(OKMessage(`Removed subscription from **${sumGame.name}**!`));
@@ -75,7 +82,7 @@ class VersionUnSubscribe extends Command {
 			return msg.channel.createMessage(ErrorMessage(`No games you're subscribed to found with that search query.`));
 
 		if (sumGames.length == 1) {
-			const curGame = settings.rows.find(set => set.game == sumGames[0]?.product && set.enabled);
+			const curGame = settings.find(set => set.game == sumGames[0]?.product && set.enabled);
 			if (curGame) {
 				const upsetState = await this.cache.upsertSubscription(msg.channel.guild.id, msg.channel.id, sumGames[0]?.product, false);
 				return msg.channel.createMessage(OKMessage(`Removed subscription from **${sumGames[0]?.name}**!`));

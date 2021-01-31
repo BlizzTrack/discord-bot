@@ -11,7 +11,7 @@ import { Client as Eris, Guild, Message, TextChannel } from 'eris';
 import fs from 'fs';
 import { CONFIG as config } from './config';
 import { CommandEvent, PluginEvent } from './interfaces/DEvent';
-import { setup as DatabaseSetup, upgrade as DatabaseUpgrade } from './lib/Database';
+import { connection } from './lib/Database';
 import { logger } from './lib/Logger';
 import { ErrorMessage as CommandError } from './lib/Responses';
 import { Command } from './structures/Command';
@@ -23,8 +23,7 @@ const bot = new Eris(process.env.DISCORD_TOKEN, config.eris || {});
 
 bot.on('ready', async () => {
 	logger.info("Received 'ready' event from Discord!");
-	await DatabaseSetup();
-	await DatabaseUpgrade();
+	await connection.authenticate();
 
 	if (!isReady) { // We don't want to run this again if the event is sent a second time.
 		logger.verbose("Ready, loading plugins");
