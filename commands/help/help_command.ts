@@ -63,10 +63,10 @@ class HelpCommand extends Command {
 		let syntax: string;
 
 
-		if (bCommand.permission.allow > 0)
-			permissions = Object.keys(baseCommand.permission.json).filter(k => bCommand.permission.json[k]); // Check if permission is true.
+		if (bCommand.permissions.allow > 0) //@ts-ignore ts(7053)
+			permissions = Object.keys(baseCommand.permissions.json).filter(k => bCommand.permissions.json[k]); // Check if permission is true.
 
-		if (bCommand.permission.json.administrator)
+		if (bCommand.permissions.json.administrator)
 			permissions.push("administrator");
 
 		// Check for subcommands & their permissions
@@ -76,10 +76,10 @@ class HelpCommand extends Command {
 
 				syntax = command.syntax.replace(/{name}/g, bCommand.name);
 
-				if (bCommand.permission.allow > 0)
-					permissions = permissions.concat(Object.keys(bCommand.permission.json).filter(k => bCommand.permission.json[k])); // Check if permission is true.
+				if (bCommand.permissions.allow > 0) //@ts-ignore ts(7053)
+					permissions = permissions.concat(Object.keys(bCommand.permissions.json).filter(k => bCommand.permissions.json[k])); // Check if permission is true.
 
-				if (command.permission.json.administrator)
+				if (command.permissions.json.administrator)
 					permissions.push("administrator");
 
 			} else {
@@ -88,10 +88,10 @@ class HelpCommand extends Command {
 			}
 		} else {
 			syntax = baseCommand.syntax.replace(/{name}/g, baseCommand.name);
-			if (baseCommand.permission.allow > 0 && baseCommand.permission.json.allow)
-				permissions = permissions.concat(Object.keys(baseCommand.permission.json.allow));
+			if (baseCommand.permissions.allow > 0) //@ts-ignore ts(7053)
+				permissions = permissions.concat(Object.keys(baseCommand.permissions.json).filter(perm => baseCommand.permissions.json[perm]));
 
-			if (baseCommand.permission.json.administrator)
+			if (baseCommand.permissions.json.administrator)
 				permissions.push("administrator");
 
 			// Grab subcommands & their syntaxes

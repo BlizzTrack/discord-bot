@@ -1,8 +1,8 @@
-import { Permission } from "eris";
+import { Permission as Permissions } from "eris";
 import { Command } from '../structures/Command';
 
 export interface CommandOptions {
-	permission?: Permission | string[];
+	permissions?: Permissions | string[];
 	cooldown?: number;
 	description?: string;
 	extendedDescription?: string;

@@ -19,7 +19,7 @@ class VersionSubscribe extends Command {
 		this.cache = CacheSingleton.instance;
 	}
 
-	get permission(): Permission {
+	get permissions(): Permission {
 		return new Permission(Constants.Permissions.manageWebhooks, 0);
 	}
 

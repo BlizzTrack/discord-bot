@@ -8,7 +8,7 @@ export class Command {
 
 
 	private _name: string = '';
-	private _permission: Permission = new Permission(0, 0);
+	private _permissions: Permission = new Permission(0, 0);
 	private _cooldown: number = 1000;
 	private _description: string = "";
 	private _extendedDescription: string = "";
@@ -35,14 +35,14 @@ export class Command {
 		this._syntax = name;
 
 
-		if (options.permission) {
-			if (options.permission instanceof Array) {
+		if (options.permissions) {
+			if (options.permissions instanceof Array) {
 				let perm_allow = 0;
-				for (let perm of options.permission)
+				for (let perm of options.permissions)
 					perm_allow += Permissions[perm];
-				this._permission = new Permission(perm_allow, 0);
+				this._permissions = new Permission(perm_allow, 0);
 			} else {
-				this._permission = options.permission;
+				this._permissions = options.permissions;
 			}
 		}
 
@@ -110,8 +110,8 @@ export class Command {
 		return this._category;
 	}
 
-	get permission() {
-		return this._permission;
+	get permissions() {
+		return this._permissions;
 	}
 
 	get aliases() {
@@ -136,14 +136,14 @@ export class Command {
 
 	canRun(channel: TextChannel, member: Member | User): boolean {
 		if (!(member instanceof Member))
-			return this.permission.allow == 0;
+			return this.permissions.allow == 0n;
 
 		if (member.guild.ownerID == member.id) return true;
 
-		if ((this.permission.allow & channel.permissionsOf(member).allow) == this.permission.allow)
+		if ((this.permissions.allow & channel.permissionsOf(member).allow) == this.permissions.allow)
 			return true;
 
-		return (this.permission.allow & member.permissions.allow) == this.permission.allow || member.permissions.has("administrator");
+		return (this.permissions.allow & member.permissions.allow) == this.permissions.allow || member.permissions.has("administrator");
 	}
 
 	initialize(client: Client, e: PluginEvent) { }

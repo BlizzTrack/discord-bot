@@ -14,7 +14,7 @@ class ClearSubs extends Command {
 		});
 	}
 
-	get permission(): Permission {
+	get permissions(): Permission {
 		return new Permission(Constants.Permissions.manageWebhooks, 0);
 	}
 
