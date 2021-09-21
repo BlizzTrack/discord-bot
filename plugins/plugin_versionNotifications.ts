@@ -94,9 +94,13 @@ class VersionNotifications extends Plugin {
 		});
 		this.updateCache(game.code, game.seqn);
 
-		for (let channel of channels)
-			if (channel.channel && await this.shouldPostInChannel(channel.guild, channel.channel, game.code))
+		for (let channel of channels) {
+			if (channel.channel && await this.shouldPostInChannel(channel.guild, channel.channel, game.code)) {
+				if (channel.game === '*' && game.name.toLowerCase().includes("vendor"))
+					continue;
 				client.createMessage(channel.channel, GameVersion(game));
+			}
+		}
 	}
 
 	async updateCache(game: string, seqn: number): Promise<boolean> {
