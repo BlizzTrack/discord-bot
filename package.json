@@ -24,11 +24,11 @@
     "ts-node": "^10.2.1"
   },
   "dependencies": {
-    "typescript": "^4.4.3",
     "consola": "^2.15.3",
-    "eris": "^0.15.1",
+    "eris": "^0.16.1",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.6.5"
+    "sequelize": "^6.12.5",
+    "typescript": "^4.5.4"
   }
 }
