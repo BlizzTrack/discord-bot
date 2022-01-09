@@ -1,12 +1,13 @@
 {
   "name": "bt-bot",
-  "version": "2.0.6",
+  "version": "2.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx tsc --build tsconfig.json",
-    "start": "node ./index.js"
+    "build": "npx tsc --build tsconfig.json && cp package.json dist/",
+    "start": "node ./index.js",
+    "dev": "npm run build && node -r dotenv/config dist/index"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,8 @@
   "devDependencies": {
     "@tsconfig/node14": "^1.0.1",
     "@types/node": "^16.9.6",
-    "ts-node": "^10.2.1"
+    "dotenv": "^10.0.0",
+    "ts-node": "^10.4.0"
   },
   "dependencies": {
     "consola": "^2.15.3",
