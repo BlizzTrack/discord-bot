@@ -1,21 +1,19 @@
 export const VERSION = require('./package.json').version;
 
 export const BASE_URL = 'https://blizztrack.com';
+export const API_URL = `${BASE_URL}/api`;
 
-// Check Environment variables to determine which url to use.
+export const DOCS = `https://blizztrack.com/Docs/Bot`;
 
-export const API_PATH = '/api';
+export const VIEW_MANIFEST = (game: string, flag: Flag, seqn: number) => `${BASE_URL}/v/${game}/${flag}?latest-seqn=${seqn}`;
 
-export const DOCS = `https://blizztrack.com/Docs/Bot`; // TODO: Check for beta url once stable is updated.
+export const ALL_PATCHNOTES = `${API_URL}/patch-notes/`;
+export const PATCHNOTES = (game: string, type?: string) => `${API_URL}/patch-notes/${game}${type ? `/${type}` : ''}`;
 
-export const MANIFEST = (game: string, flag: string, seqn: number) => `${BASE_URL}/v/${game}/${flag}?latest-seqn=${seqn}`;
-
-export const ALL_PATCHNOTES = `${BASE_URL}/api/patch-notes/`;
-export const PATCHNOTES = (game: string, type?: string) => `${BASE_URL}/api/patch-notes/${game}${type ? `/${type}` : ''}`;
-
-export const SUMMARY = `${BASE_URL}${API_PATH}/summary`;
-export const VERSIONS = (game: string) => `${BASE_URL}${API_PATH}/ngpd/${game}/versions`;
-export const CDN = (game: string) => `${BASE_URL}${API_PATH}/ngpd/${game}/cdn`;
+export const SUMMARY = `${API_URL}/summary`;
+export const VERSIONS = (game: string) => `${API_URL}/ngpd/${game}/versions`;
+export const CDN = (game: string) => `${API_URL}/ngpd/${game}/cdn`;
+export const MANIFEST = (game: string, flag: Flag, seqn?: number) => `${API_URL}/Manifest/${flag}/${game}${seqn !== undefined ? `?seqn=${seqn}` : ''}`;
 
 // TODO: Come up with more aliases
 export const ALIASES: { [short: string]: string } = {
@@ -24,3 +22,5 @@ export const ALIASES: { [short: string]: string } = {
 	hots: 'hero',
 	wowptr: 'wowt'
 }
+
+export type Flag = 'versions' | 'cdn' | 'bgdl';

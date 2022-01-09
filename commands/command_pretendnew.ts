@@ -25,7 +25,7 @@ class PretendNew extends Command {
 
 	async execute(client: Client, msg: Message<TextChannel>, e: CommandEvent) {
 		let game = e.args.join(" ").toLowerCase();
-		client.createMessage(msg.channel.id, GameVersion(await API.versions(game)));
+		client.createMessage(msg.channel.id, GameVersion(await API.versions_from_seqn(game)));
 	}
 }
 

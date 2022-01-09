@@ -1,6 +1,6 @@
 import https from 'https';
-import { CDN, SUMMARY, VERSION, VERSIONS } from '../Constants';
-import { CDNRegion, Summary, VersionRegion, View } from '../interfaces/API';
+import { CDN, MANIFEST, SUMMARY, VERSION, VERSIONS } from '../Constants';
+import { CDNRegion, Manifest, Summary, VersionRegion, View } from '../interfaces/API';
 import { logger } from './Logger';
 
 
@@ -42,6 +42,11 @@ export async function apiGet<T>(url: string): Promise<T> {
 
 export function versions(game: string): Promise<View<VersionRegion>> {
 	return apiGet<View<VersionRegion>>(VERSIONS(game));
+}
+
+
+export function versions_from_seqn(game: string, seqn?: number): Promise<Manifest<VersionRegion>> {
+	return apiGet<Manifest<VersionRegion>>(`${MANIFEST(game, 'versions', seqn)}`);
 }
 
 export function cdn(game: string): Promise<View<CDNRegion>> {

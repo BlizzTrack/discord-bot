@@ -1,9 +1,5 @@
 import {
-	Sequelize,
-	Model,
-	DataTypes,
-	Optional,
-	fn,
+	DataTypes, fn, Model, Optional, Sequelize
 } from "sequelize";
 
 const connectionString = process.env.POSTGRES_CONNECTION_STRING;
@@ -21,10 +17,12 @@ export const connection = new Sequelize(connectionString, {
 });
 
 //#region Interfaces
-export interface IPostCache {
+export interface IVersionCache {
 	game: string;
+	region: string;
+	version: string;
 	seqn: number;
-	posted: Date;
+	dateCrawled: Date;
 }
 
 export interface IPatchNoteCache {
@@ -53,6 +51,14 @@ export interface IPagination {
 //#endregion
 
 //#region Models
+export class VersionCache extends Model<IVersionCache> implements IVersionCache {
+	public game!: string;
+	public region!: string;
+	public version!: string;
+	public seqn!: number;
+	public dateCrawled!: Date;
+}
+
 export class DiscordChannel extends Model<IDiscordChannel> implements IDiscordChannel {
 	public guild!: string;
 	public channel!: string;
@@ -67,12 +73,6 @@ export class PatchNoteCache extends Model<IPatchNoteCache, Optional<IPatchNoteCa
 	public updated!: Date;
 }
 
-export class PostCache extends Model<IPostCache, Optional<IPostCache, 'posted'>> implements IPostCache {
-	public seqn!: number;
-	public game!: string;
-	public posted!: Date;
-}
-
 export class Pagination extends Model<IPagination> implements IPagination {
 	public channel!: string;
 	public message!: string;
@@ -82,9 +82,38 @@ export class Pagination extends Model<IPagination> implements IPagination {
 	public page!: number;
 	public data?: any;
 }
+
 //#endregion
 
 //#region Initialize Models
+VersionCache.init({
+	game: {
+		type: DataTypes.STRING,
+		primaryKey: true
+	},
+	region: {
+		type: DataTypes.STRING,
+		primaryKey: true
+	},
+	version: {
+		type: DataTypes.STRING,
+		primaryKey: true
+	},
+	seqn: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+	},
+	dateCrawled: {
+		type: DataTypes.DATE,
+		allowNull: false
+	}
+}, {
+	tableName: 'version_cache',
+	sequelize: connection,
+	timestamps: false,
+});
+
+
 DiscordChannel.init(
 	{
 		guild: {
@@ -108,30 +137,6 @@ DiscordChannel.init(
 	},
 	{
 		tableName: "discord_channels",
-		sequelize: connection,
-		timestamps: false
-	}
-);
-
-PostCache.init(
-	{
-		seqn: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			allowNull: false
-		},
-		game: {
-			type: DataTypes.STRING,
-			primaryKey: true,
-			allowNull: false
-		},
-		posted: {
-			type: DataTypes.DATE,
-			defaultValue: fn('NOW')
-		}
-	},
-	{
-		tableName: "post_cache",
 		sequelize: connection,
 		timestamps: false
 	}

@@ -28,6 +28,15 @@ export interface View<T extends Region> {
 	data: T[]
 }
 
+export interface Manifest<T extends Region> {
+	product: string,
+	encrypted: boolean,
+	name: string,
+	seqn: number,
+	indexed: string,
+	data: T[]
+}
+
 export interface Region {
 	region_name: string,
 	region: string,

@@ -1,6 +1,6 @@
 import { Summary } from "../interfaces/API";
 import { summary } from "./API";
-import { IDiscordChannel, DiscordChannel } from "./Database";
+import { DiscordChannel, IDiscordChannel } from "./Database";
 import { logger } from "./Logger";
 
 export class CacheSingleton {
@@ -32,7 +32,7 @@ export class CacheSingleton {
 		if (this._settingsCache == null || this._lastSettingsDate < Date.now() - 60 * 1000) {
 			this._lastSettingsDate = Date.now();
 			logger.verbose("Refreshing discord_channels cache!");
-			const quer = await DiscordChannel.findAll(); // SELECT * FROM discord_channels
+			const quer = await DiscordChannel.findAll();
 
 			return (this._settingsCache = quer);
 		}
@@ -48,7 +48,6 @@ export class CacheSingleton {
 			game: game,
 			enabled: enabled
 		});
-		// pool.query(`INSERT INTO discord_channels(guild, channel, game, enabled) VALUES($1, $2, $3, $4) ON CONFLICT(channel, game) DO UPDATE SET enabled=$4`, [guild, channel, game, enabled]);
 
 		if (settingIndex != -1) {
 			this._settingsCache[settingIndex].enabled = enabled;

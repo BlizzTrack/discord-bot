@@ -1,6 +1,6 @@
 import { MessageContent } from "eris"
-import { MANIFEST } from "../Constants"
-import { VersionRegion, View } from "../interfaces/API"
+import { MANIFEST as VIEW_MANIFEST } from "../Constants"
+import { Manifest, VersionRegion, View } from "../interfaces/API"
 
 export function ErrorMessage(errorMessage: string, title?: string) {
 	return {
@@ -26,12 +26,12 @@ export function OKMessage(okMessage: string, title?: string) {
 
 
 // GameVersion takes an array of versions, one entry for each region.
-export function GameVersion(game: View<VersionRegion>): MessageContent {
+export function GameVersion(game: Manifest<VersionRegion>): MessageContent {
 	return {
 		content: "",
 		embed: {
 			title: `New ${game.name} version`,
-			url: MANIFEST(game.code, 'versions', game.seqn),
+			url: VIEW_MANIFEST(game.product, 'versions', game.seqn),
 			description: `A new version for ${game.name} is available.`,
 			fields: game.data.map(ver => {
 				return {
